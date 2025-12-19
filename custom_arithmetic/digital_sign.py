@@ -1,3 +1,5 @@
+# Copyright 2025 - Marina Simion
+
 from rsa import *
 
 def sign_message(n_a, n_b, e_b, d_a, msg_fmt, message_no):
@@ -95,7 +97,8 @@ def digital_signature_init(afile1, afile2, bfile1, bfile2, efile1, efile2):
     else:
         print("Bob detects that Eve's cryptogram (" + ''.join(map(str, fake_alice_cryptogram[0])) + ", " + ''.join(map(str, fake_alice_cryptogram[1])) + ") is from EVE!")
 
-digital_signature_init("ds_rsa_p1_prime", "ds_rsa_q1_prime", "ds_rsa_p2_prime", "ds_rsa_q2_prime", "ds_rsa_p3_prime", "ds_rsa_q3_prime")
+if __name__ == "__main__":
+    digital_signature_init("../data/ds_rsa_p1_prime", "../data/ds_rsa_q1_prime", "../data/ds_rsa_p2_prime", "../data/ds_rsa_q2_prime", "../data/ds_rsa_p3_prime", "../data/ds_rsa_q3_prime")
 # digital_signature_init("ds_rsa_p1_prime", "ds_rsa_q1_prime", "ds_rsa_p3_prime", "ds_rsa_q3_prime", "ds_rsa_p2_prime", "ds_rsa_q2_prime")
 # digital_signature_init("ds_rsa_p2_prime", "ds_rsa_q2_prime", "ds_rsa_p1_prime", "ds_rsa_q1_prime", "ds_rsa_p3_prime", "ds_rsa_q3_prime")
 # digital_signature_init("ds_rsa_p2_prime", "ds_rsa_q2_prime", "ds_rsa_p3_prime", "ds_rsa_q3_prime", "ds_rsa_p1_prime", "ds_rsa_q1_prime")

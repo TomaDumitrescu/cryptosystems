@@ -193,4 +193,5 @@ def el_gamal_presentation(filename):
     sam.send(alice, "Hello, Alice!")
     david.send(sam, "Hello, Sam!")
 
-el_gamal_presentation("el_gamal_prime")
+if __name__ == "__main__":
+    el_gamal_presentation("../data/el_gamal_prime")

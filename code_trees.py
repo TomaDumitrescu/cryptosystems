@@ -1,4 +1,6 @@
-from helpers import get_code
+# Copyright 2025 - Marina Simion
+
+from custom_arithmetic.helpers import get_code
 import matplotlib.pyplot as plt
 
 class Node:
@@ -138,5 +140,5 @@ def prefix_tree_presentation(filename):
 
     plot_tree(bintree.root)
 
-
-prefix_tree_presentation("code_words")
+if __name__ == "__main__":
+    prefix_tree_presentation("data/code_words")

@@ -1,8 +1,7 @@
-# Copyright 2025 -Toma Dumitrescu
 from helpers import *
 
 class PrivateKeyCalculator:
-    def calculate_personal_no(self, p: deque):
+    def calculate_personal_no(self, p):
         """
         Calculates a random in (1, p) open interval
 
@@ -18,7 +17,7 @@ class PrivateKeyCalculator:
         """
         return random_less_than(p)
 
-    def calculate_private_key(self, val: deque, private_no: deque, p: deque):
+    def calculate_private_key(self, val, private_no, p):
         """
         Calculates the shared private key between the two entities for each entity, called from the entity
 
@@ -34,10 +33,10 @@ class PrivateKeyCalculator:
         :param private_no: communication entity private number as deque
         :param p: the prime p as a deque
         """
-        return pow_mod(val, private_no, deque(p))
+        return pow_mod(val, private_no, p)
 
 class DiffieHellmanEntity():
-    def __init__(self, p: deque, g: deque, name: str):
+    def __init__(self, p, g, name: str):
         self.name = name
         self.p = p
         self.g = g
@@ -51,27 +50,27 @@ class DiffieHellmanEntity():
         dh.receive(pow_mod(self.g, self.__private_no, self.p))
 
     def receive(self, val):
-        print(self.name + " received " + ''.join(map(str, val)))
+        print(self.name + " received " + str(val))
         self.__private_key = self.calculator.calculate_private_key(val, self.__private_no, self.p)
 
     # Temporary method
     def debug_private_key(self):
-        print(self.name + " random number: " + ''.join(map(str, self.__private_no)))
-        print(self.name + " key: " + ''.join(map(str, self.__private_key)))
+        print(self.name + " random number: " + str(self.__private_no))
+        print(self.name + " key: " + str(self.__private_key))
 
 
 def diffie_hellman(filename: str):
     # initialization
-    print("DIFFIE-HELLMAN PROTOCOL\n")
+    print("DIFFIE-HELLMAN PROTOCOL (Built-in Arithmetic Implementation)\n")
     g_no = random.choice([2, 5])
-    g = deque([g_no])
+    g = g_no
     _, p = get_number(filename)
 
     print("Public information:")
-    print("g =", ''.join(map(str, g)))
-    print("Prime p was generated using openssl prime -generate -bits 512 -safe")
-    print("For modern standards 2048 bits, there should be optimizations such as Chinese Reminder Theorem")
-    print("p =", ''.join(map(str, p)))
+    print("g =", str(g))
+    print("Prime p was generated using openssl prime -generate -bits 1024 -safe")
+    print("Using Python built-in arithmetic - significantly faster than custom implementation")
+    print("p =", str(p))
 
     # calculating private numbers a and b
     alice = DiffieHellmanEntity(p, g, "Alice")
@@ -87,4 +86,5 @@ def diffie_hellman(filename: str):
     bob.debug_private_key()
 
 
-diffie_hellman("dh_p_prime")
+if __name__ == "__main__":
+    diffie_hellman("../tests/big_prime1")

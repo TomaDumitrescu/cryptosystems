@@ -1,3 +1,5 @@
+# Copyright 2025 - Marina Simion
+
 import heapq
 import matplotlib.pyplot as plt
 
@@ -275,4 +277,5 @@ def huffman_tree_visualization(file_path="huffman_input"):
     propagate_probs(bintree.root)
     plot_tree(bintree.root)
 
-huffman_tree_visualization("huffman_input")
+if __name__ == "__main__":
+    huffman_tree_visualization("data/huffman_input")

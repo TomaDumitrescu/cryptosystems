@@ -1,4 +1,3 @@
-# Copyright 2025 -Toma Dumitrescu
 from helpers import *
 
 def RSA_init(p: deque, q: deque):
@@ -24,41 +23,32 @@ def RSA_init(p: deque, q: deque):
     # phi = (p-1)*(q-1)
     _, p_decrement = big_substract(deque(p), False, deque([1]), False)
     _, q_decrement = big_substract(deque(q), False, deque([1]), False)
-    _, phi = big_multiply_dec(deque(p_decrement), False, deque(q_decrement), False)
+    _, phi = big_multiply_dec(p_decrement, False, q_decrement, False)
 
     # choose e with gcd(e, phi) = 1
-
     # UNCOMMENT THIS LINE FOR A RANDOM COPRIME PUBLIC KEY
     # e = random_coprime(phi)
-    e = deque([6, 5, 5, 3, 7])
-
-    # _, g = big_gcd(e, False, phi, False)
-    # g = normalize(g)
-    # if not (len(g) == 1 and g[0] == 1):
-    #     e = random_coprime(phi)
+    e = 65537
 
     # extended Euclid: e*x + phi*y = gcd(e, phi) = 1
-    g, neg_g, x, neg_x, y, _ = big_ext_euclid_recursive(deque(e), False, deque(phi), False)
+    g, neg_g, x, neg_x, y, _ = big_ext_euclid_recursive(e, False, phi, False)
 
     # check gcd(e, phi) == 1
-    if not (neg_g == False and len(g) == 1 and g[0] == 1):
+    if not (neg_g == False and g == 1):
         raise ValueError("random_coprime failed: gcd(e, phi) != 1")
 
-    # |x| mod phi  (we treat digits of x as abs(x); sign is in neg_x)
-    x_abs = strip_zeroes(deque(x))
-    _, _, r = big_divide(deque(x_abs), False, deque(phi), False)   # r = |x| mod phi
+    # |x| mod phi
+    _, _, r = big_divide(abs(x), False, phi, False)
 
     # If x >= 0  → d = r
     # If x < 0   → d = (phi - r) mod phi
     if not neg_x:
         d = r
     else:
-        if is_zero(r):
-            # x ≡ 0 (mod phi) would contradict gcd=1, so this is “impossible”
-            # but we guard anyway
-            d = deque([0])
+        if r == 0:
+            d = 0
         else:
-            _, d = big_substract(deque(phi), False, deque(r), False)  # phi - r
+            _, d = big_substract(phi, False, r, False)
 
     return n, e, d
 
@@ -78,10 +68,8 @@ def RSA_encrypt(message, e, n):
     :param e: public encryption key as deque
     :param n: classic n RSA as deque
     """
-    message_deque = deque()
-    for c in message:
-        message_deque.append(int(c))
-    return pow_mod(message_deque, e, deque(n))
+    message_int = int(message)
+    return pow_mod(message_int, e, n)
 
 def RSA_decrypt(enc_message, d, n):
     """
@@ -103,19 +91,18 @@ def RSA_decrypt(enc_message, d, n):
 
 def RSA_crypto_system(presentation: bool, message_param: str, file_p: str, file_q: str):
     if presentation:
-        print("RSA CRYPTOSYSTEM\n")
+        print("RSA CRYPTOSYSTEM (Built-in Arithmetic Implementation)\n")
         print("FOR DIGITAL SIGNATURE, COMMENT THE LAST PRESENTATION CALL FOR PRETTY DISPLAY")
     # safe primes generated with CLI tools
     _, p = get_number(file_p)
     _, q = get_number(file_q)
 
     if presentation:
-        print("Primes were generated with the command openssl prime -generate -bits 512 -safe")
-        print("For modern standards 2048 bits, there should be optimizations for the decryption such as Chinese Reminder Theorem")
-        print("For 0 - 300 bits, the decryption runs in 0-6s, for 512 bits 30 - 40s")
+        print("Primes were generated with the command openssl prime -generate -bits 1024 -safe")
+        print("Using Python built-in arithmetic - significantly faster than custom implementation")
         print("Secret information:")
-        print("p = " + ''.join(map(str, p)))
-        print("q = " + ''.join(map(str, q)))
+        print("p = " + str(p))
+        print("q = " + str(q))
 
     # d is secret
     n, e, d = RSA_init(p, q)
@@ -123,9 +110,9 @@ def RSA_crypto_system(presentation: bool, message_param: str, file_p: str, file_
         return n, e, d
 
     if presentation:
-        print("d = " + ''.join(map(str, d)))
+        print("d = " + str(d))
         print("Public key:")
-        print(''.join(map(str, e)))
+        print(str(e))
         message = input("Enter the plaintext message (< 128 chars alphanumeric) to be encrypted with RSA: ")
     else:
         message = message_param
@@ -134,12 +121,13 @@ def RSA_crypto_system(presentation: bool, message_param: str, file_p: str, file_
     if presentation:
         print("Plaintext to number: " + str(message))
         print("Encrypted message using ck:")
-        print(''.join(map(str, encrypted_message)))
+        print(str(encrypted_message))
         print("Decrypted message using dk:")
     decrypted_message = RSA_decrypt(encrypted_message, d, n)
-    decrypted_message_no = ''.join(map(str, decrypted_message))
+    decrypted_message_no = str(decrypted_message)
     if presentation:
         print(convert_number_to_plaintext(int(decrypted_message_no)))
 
 # For digital signature, this line should be commented since it stands just as a presentation
-RSA_crypto_system(True, "", "rsa_p_prime", "rsa_q_prime")
+if __name__ == "__main__":
+    RSA_crypto_system(True, "", "../tests/big_prime1", "../tests/big_prime2")
